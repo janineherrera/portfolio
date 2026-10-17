@@ -845,7 +845,118 @@ a { color: inherit; }
   color: var(--c-muted);
 }
 
-/* ══ 10. Portfolio ════════════════════════════════════════════════════════ */
+/* ══ 10. Experience ═══════════════════════════════════════════════════════
+   A vertical timeline. The rail and the node are deliberately separate
+   elements: the connector is drawn on the card *below* the gap (::before,
+   anchored upward from its own top edge) so the next card's opaque surface
+   can never paint over it. Drawing it downward from the previous card does
+   not work - the following sibling is painted later and covers it.        */
+.section--experience { padding-top: 0; }
+
+.experience {
+  --exp-gap:  clamp(1rem, 2.2vw, 1.6rem);
+  --exp-rail: 9px;                 /* x of the rail centre, from the card edge */
+  --exp-node: 14px;
+  --exp-node-mid: 1.95rem;         /* rail x-position of the first node, vertically */
+  display: grid;
+  gap: var(--exp-gap);
+  max-width: 58rem;
+  margin: 0;
+  list-style: none;                 /* `ul[class]` only resets ul, not ol */
+}
+
+.exp-item {
+  position: relative;
+  padding: clamp(1.2rem, 2vw, 1.7rem)
+           clamp(1.2rem, 2vw, 1.9rem)
+           clamp(1.2rem, 2vw, 1.7rem)
+           clamp(3rem, 5vw, 4rem);  /* left clears the rail + node */
+  border: 1px solid var(--c-line-soft);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface-2);
+  box-shadow: 0 1px 2px rgba(5,5,5,.04), 0 14px 30px -20px rgba(5,5,5,.4);
+  transition: border-color .3s ease, box-shadow .3s ease;
+}
+/* Border and shadow only. A transform here would lose to `.reveal.is-visible`
+   (0,3,0) and the lift would never happen - the same trap as `.skill-group`. */
+.exp-item:hover {
+  border-color: color-mix(in srgb, var(--c-accent-deep) 26%, var(--c-line));
+  box-shadow: 0 2px 4px rgba(5,5,5,.05), 0 22px 44px -24px rgba(5,5,5,.5);
+}
+
+.exp-item::before {
+  content: "";
+  position: absolute;
+  left: var(--exp-rail);
+  bottom: 100%;
+  width: 2px;
+  height: calc(var(--exp-gap) + var(--exp-node-mid));
+  margin-left: -1px;
+  background: var(--c-line);
+}
+.exp-item:first-child::before { display: none; }
+
+.exp-item__dot {
+  position: absolute;
+  left: var(--exp-rail);
+  top: calc(var(--exp-node-mid) - var(--exp-node) / 2);
+  width: var(--exp-node);
+  height: var(--exp-node);
+  margin-left: calc(var(--exp-node) / -2);
+  border-radius: 50%;
+  background: var(--c-surface-2);
+  border: 2px solid var(--c-accent-deep);
+  /* The ring hides the connector passing behind the node. */
+  box-shadow: 0 0 0 4px var(--c-surface);
+}
+
+.exp-item__when {
+  font-size: 0.76rem;
+  font-weight: var(--fw-semi);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.exp-item__role {
+  margin-top: 0.45rem;
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.4rem);
+  font-weight: var(--fw-bold);
+  line-height: 1.25;
+  color: var(--c-ink);
+}
+.exp-item__where {
+  margin-top: 0.2rem;
+  font-size: 0.95rem;
+  color: var(--c-muted);
+}
+
+/* Two selectors, not one. `ul[class]` in the reset is (0,1,1) and would beat a
+   bare `.exp-item__points` (0,1,0), silently swallowing the bullets. */
+ul.exp-item__points,
+.exp-item .exp-item__points {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.95rem;
+  padding-left: 1.15rem;          /* the `ul[class]` reset also zeroes this */
+  list-style: disc;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--c-ink);
+}
+.exp-item__points li::marker { color: var(--c-accent-deep); }
+.exp-item .chips { margin-top: 1.05rem; }
+
+@media (max-width: 560px) {
+  /* Tighter rail so the text keeps its measure on a narrow phone. */
+  .exp-item {
+    padding-left: 2.5rem;
+    border-radius: var(--radius-md);
+  }
+  .experience { --exp-rail: 7px; --exp-node: 12px; }
+}
+
+
+/* ══ 11. Portfolio ════════════════════════════════════════════════════════ */
 /* Dark panel, one step lighter than the contact section so the two read as
    separate blocks rather than one long dark stretch. */
 .section--work {
@@ -1031,7 +1142,7 @@ a { color: inherit; }
   border-color: var(--c-accent);
 }
 
-/* ══ 11. Contact ═════════════════════════════════════════════════════════ */
+/* ══ 12. Contact ═════════════════════════════════════════════════════════ */
 .section--contact {
   margin-top: var(--section-y);
   padding-top: 0;
@@ -1100,7 +1211,7 @@ a { color: inherit; }
   .linkrow__value  { grid-column: 1 / -1; grid-row: 2; justify-self: start; }
 }
 
-/* ══ 12. Footer ══════════════════════════════════════════════════════════ */
+/* ══ 13. Footer ══════════════════════════════════════════════════════════ */
 .site-footer {
   position: relative;
   z-index: 1;
@@ -1142,7 +1253,7 @@ a { color: inherit; }
   .site-footer__inner { flex-direction: column; align-items: flex-start; }
 }
 
-/* ══ 13. Motion & reduced motion ═════════════════════════════════════════ */
+/* ══ 14. Motion & reduced motion ═════════════════════════════════════════ */
 
 /* -- Reading progress --------------------------------------------------- */
 .progress {
@@ -1224,6 +1335,16 @@ a { color: inherit; }
 }
 .js .skill-group.is-visible .chip { opacity: 1; transform: none; }
 
+/* Same staggered pop-in for the tech chips on each experience entry.
+   main.js already stamps --i on every .chip inside a .chips list. */
+.js .exp-item .chip {
+  opacity: 0;
+  transform: translateY(6px) scale(.94);
+  transition: opacity .4s ease, transform .4s cubic-bezier(.2,.7,.3,1);
+  transition-delay: calc(var(--i, 0) * 35ms + 120ms);
+}
+.js .exp-item.is-visible .chip { opacity: 1; transform: none; }
+
 /* -- Card hover gains the accent --------------------------------------- */
 .card:hover { border-color: color-mix(in srgb, var(--c-accent-deep) 34%, var(--c-line)); }
 
@@ -1261,7 +1382,7 @@ a { color: inherit; }
   .to-top { opacity: 1; visibility: visible; transform: none; transition: none; }
 }
 
-/* ══ 14. Print ═══════════════════════════════════════════════════════════ */
+/* ══ 15. Print ═══════════════════════════════════════════════════════════ */
 @media print {
   .site-header, .nav-toggle, .hero__portrait { display: none !important; }
   body { background: #fff; }

@@ -116,6 +116,7 @@ Search for that string to jump straight to each spot.
 | Portrait image | `.hero__portrait img` → `src` |
 | About copy + fact list | `.about` |
 | Skills groups | `.skills` |
+| Roles / work history | `.experience` |
 | Projects | `.cards` |
 
 > A longer name is fine — it wraps, and `.hero__name` has `overflow-wrap: break-word`
@@ -156,6 +157,23 @@ Copy any `<article class="card reveal">…</article>` block and edit the content
 
 Copy a whole `<section class="skill-group reveal">…</section>` block. Keep the
 `aria-labelledby` on the heading pointing at that block's own `id`.
+
+### Adding a role
+
+Copy one whole `<li class="exp-item reveal">…</li>` block inside `.experience`, newest
+first. Nothing else needs changing — the timeline rail, the connector between cards and
+the staggered chips all follow from the markup.
+
+Two things to know about that block:
+
+* The `<span class="exp-item__dot">` is what draws the node on the rail. Keep it as the
+  **first** child so it lines up with the date and title.
+* Drop the `<ul class="chips chips--sm">` if a role involved no technology worth
+  listing. Drop the `<ul class="exp-item__points">` only if there is genuinely nothing
+  to say — an entry with no bullet reads as an error.
+
+Keep each bullet to something you would be happy to be asked about in an interview.
+Specific and short beats long and vague.
 
 ---
 
