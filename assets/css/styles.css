@@ -833,6 +833,9 @@ a { color: inherit; }
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
   gap: clamp(1.25rem, 2.5vw, 2rem);
 }
+/* A single project would otherwise stretch to the full row width and run the
+   description past 100 characters per line. Stops applying once there are 2+. */
+.cards > .card:only-child { max-width: 42rem; }
 .card {
   display: flex;
   flex-direction: column;
