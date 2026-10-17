@@ -182,6 +182,10 @@ const PLACEHOLDER = [
   { re: /placeholder/i,                                 what: '"placeholder" wording' },
   { re: /assets\/img\/portrait-placeholder\.svg/,       what: 'the placeholder portrait' },
   { re: /\bTODO\b/,                                     what: 'TODO markers' },
+  // Fill-in-the-blank text someone forgot to replace, e.g. "YOUR CITY".
+  // Matches a run of two or more ALL-CAPS words rather than a fixed keyword.
+  { re: /\b[A-Z]{4,}(?:\s+[A-Z]{4,})+\b/,                what: 'an unreplaced ALL-CAPS placeholder' },
+  { re: /\b(?:lorem|ipsum)\b/i,                         what: 'lorem ipsum filler text' },
   { re: /<h1[^>]*>\s*(?:Hi,? I am\b|[A-Z][a-z]+\s+[A-Z][a-z]+\s*<\/h1>)/i, what: 'an unmodified demo <h1>' }
 ];
 
