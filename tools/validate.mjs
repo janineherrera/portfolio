@@ -34,14 +34,20 @@ if (!htmlFiles.length) fail('index.html is missing from the build context');
 
 const pages = htmlFiles.map(f => ({ file: f, html: readFileSync(join(ROOT, f), 'utf8') }));
 
+/* Commented-out template code is not live markup. Referenced assets and ids
+   inside a comment must not fail the build, or every "uncomment this to add
+   a project" block would have to be written without real-looking paths. */
+const stripComments = html => html.replace(/<!--[\s\S]*?-->/g, '');
+for (const p of pages) p.live = stripComments(p.html);
+
 /* --- 1. Every referenced local asset must exist ------------------------- */
 const REMOTE = /^(https?:|mailto:|tel:|data:|javascript:|#|\/\/)/i;
 
-for (const { file, html } of pages) {
+for (const { file, live } of pages) {
   const refs = new Set();
 
-  for (const m of html.matchAll(/\b(?:src|href)\s*=\s*"([^"]+)"/g)) refs.add(m[1]);
-  for (const m of html.matchAll(/\bsrcset\s*=\s*"([^"]+)"/g)) {
+  for (const m of live.matchAll(/\b(?:src|href)\s*=\s*"([^"]+)"/g)) refs.add(m[1]);
+  for (const m of live.matchAll(/\bsrcset\s*=\s*"([^"]+)"/g)) {
     m[1].split(',').forEach(part => refs.add(part.trim().split(/\s+/)[0]));
   }
 
@@ -63,25 +69,25 @@ for (const { file, html } of pages) {
 note('checked that local src/href/srcset references resolve to real files');
 
 /* --- 2. Unique ids and resolvable in-page references ------------------- */
-for (const { file, html } of pages) {
-  const ids = [...html.matchAll(/\bid\s*=\s*"([^"]+)"/g)].map(m => m[1]);
+for (const { file, live } of pages) {
+  const ids = [...live.matchAll(/\bid\s*=\s*"([^"]+)"/g)].map(m => m[1]);
   const seen = new Set();
   for (const id of ids) {
     if (seen.has(id)) fail(`${file}: duplicate id "${id}"`);
     seen.add(id);
   }
 
-  const anchors = [...html.matchAll(/\bhref\s*=\s*"#([^"]+)"/g)].map(m => m[1]);
+  const anchors = [...live.matchAll(/\bhref\s*=\s*"#([^"]+)"/g)].map(m => m[1]);
   for (const a of new Set(anchors)) {
     if (a && !seen.has(a)) fail(`${file}: anchor "#${a}" has no matching id`);
   }
 
-  for (const u of new Set([...html.matchAll(/<use[^>]+href\s*=\s*"#([^"]+)"/g)].map(m => m[1]))) {
+  for (const u of new Set([...live.matchAll(/<use[^>]+href\s*=\s*"#([^"]+)"/g)].map(m => m[1]))) {
     if (!seen.has(u)) fail(`${file}: <use href="#${u}"> has no matching symbol/id`);
   }
 
   for (const attr of ['aria-labelledby', 'aria-controls', 'aria-describedby']) {
-    for (const m of html.matchAll(new RegExp(`${attr}\\s*=\\s*"([^"]+)"`, 'g'))) {
+    for (const m of live.matchAll(new RegExp(`${attr}\\s*=\\s*"([^"]+)"`, 'g'))) {
       for (const ref of m[1].split(/\s+/).filter(Boolean)) {
         if (!seen.has(ref)) fail(`${file}: ${attr}="${ref}" has no matching id`);
       }

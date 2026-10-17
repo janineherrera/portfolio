@@ -283,4 +283,61 @@
     }
   }
 
+/* ── 8. Project filters + expandable card details ──────────────────── */
+  var CATEGORIES = { web: 'Web', mobile: 'Mobile', uiux: 'UI/UX' };
+
+  var filterBar = $('#filters');
+  var cardList = $('#cards');
+
+  if (filterBar && cardList) {
+    var cards = $$('.card', cardList);
+
+    // Build the tab bar from the categories actually in use, so there is
+    // nothing to keep in sync by hand. One category = no bar at all.
+    var used = [];
+    cards.forEach(function (c) {
+      var k = c.dataset.cat;
+      if (k && CATEGORIES[k] && used.indexOf(k) === -1) used.push(k);
+    });
+    used.sort(function (a, b) {
+      return Object.keys(CATEGORIES).indexOf(a) - Object.keys(CATEGORIES).indexOf(b);
+    });
+
+    if (used.length > 1) {
+      var applyFilter = function (cat) {
+        cards.forEach(function (c) {
+          c.hidden = cat !== 'all' && c.dataset.cat !== cat;
+        });
+        $$('.filter', filterBar).forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b.dataset.filter === cat));
+        });
+      };
+
+      var makeTab = function (key, label) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'filter';
+        b.dataset.filter = key;
+        b.textContent = label;
+        b.setAttribute('aria-pressed', String(key === 'all'));
+        b.addEventListener('click', function () { applyFilter(key); });
+        return b;
+      };
+
+      filterBar.appendChild(makeTab('all', 'All'));
+      used.forEach(function (k) { filterBar.appendChild(makeTab(k, CATEGORIES[k])); });
+    }
+  }
+
+  // "Details" buttons expand the panel named by data-more
+  $$('[data-more]').forEach(function (btn) {
+    var panel = document.getElementById(btn.dataset.more);
+    if (!panel) return;
+    btn.addEventListener('click', function () {
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!open));
+      panel.hidden = open;
+    });
+  });
+
 })();
