@@ -790,38 +790,15 @@ a { color: inherit; }
   box-shadow: 0 2px 6px rgba(5,5,5,.06), 0 34px 60px -34px rgba(5,5,5,.6);
 }
 
-.card__media {
-  position: relative;
-  display: grid;
-  place-items: center;
-  aspect-ratio: 16 / 8;
-  overflow: hidden;
-  color: var(--c-white);
-}
-.card__media::after {           /* soft diagonal accent echoes the hero */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(112deg, rgba(255,255,255,.16), transparent 46%);
-}
-.card__media--a { background: linear-gradient(135deg, #1c1c1e, #4b5563); }
-.card__media--b { background: linear-gradient(135deg, #2b2118, #8a6a4b); }
-.card__media--c { background: linear-gradient(135deg, #12241f, #3f6b5c); }
-.card__media--d { background: linear-gradient(135deg, #1a1b2e, #4c4a7a); }
-
-.card__index {
-  position: absolute;
-  top: .9rem; left: 1.1rem;
-  font-size: .75rem;
-  font-weight: var(--fw-bold);
-  letter-spacing: .16em;
-  opacity: .65;
-}
-.card__glyph {
-  font-size: clamp(2.25rem, 5vw, 3.25rem);
-  font-weight: var(--fw-black);
-  letter-spacing: -0.05em;
-  opacity: .92;
+/* ✏️  EDIT: to add a thumbnail image to a card, put an <img> or <svg> as the
+             first child of .card (see .card__thumb below). */
+.card__thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-bottom: 1px solid var(--c-line-soft);
+  background: var(--c-surface);
 }
 
 .card__body {
