@@ -91,6 +91,41 @@ for (const { file, html } of pages) {
   note(`${file}: ${ids.length} ids, ${new Set(anchors).size} anchors, all references resolved`);
 }
 
+/* --- 2b. Tags must balance --------------------------------------------- */
+const VOID = new Set(['area','base','br','col','embed','hr','img','input',
+  'link','meta','param','source','track','wbr','use','path','circle','rect',
+  'ellipse','line','polygon','stop']);
+
+function checkBalance(html, file) {
+  const stack = [];
+  // Drop comments, doctype, CDATA and the contents of <script>/<style>
+  const src = html
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<!doctype[^>]*>/gi, '')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
+
+  for (const m of src.matchAll(/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)([^>]*?)(\/?)>/g)) {
+    const closing = m[1] === '/';
+    const tag = m[2].toLowerCase();
+    const selfClosed = m[4] === '/' || VOID.has(tag);
+    if (selfClosed) continue;
+    if (!closing) stack.push(tag);
+    else {
+      const top = stack.pop();
+      if (top !== tag) {
+        fail(`${file}: unbalanced </${tag}> (expected </${top ?? 'nothing'}>)`);
+        return;
+      }
+    }
+  }
+  if (stack.length) {
+    fail(`${file}: ${stack.length} unclosed tag(s): <${stack.join('>, <')}>`);
+  }
+}
+
+for (const { file, html } of pages) checkBalance(html, file);
+
 /* --- 3. Basic document sanity ------------------------------------------- */
 for (const { file, html } of pages) {
   const h1 = (html.match(/<h1[\s>]/g) || []).length;
