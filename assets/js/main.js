@@ -123,12 +123,24 @@
   }
 
   /* ── 5. Reveal on scroll ─────────────────────────────────────────────── */
+  /* `.reveal-wipe` is deliberately NOT observed here - its clip-path leaves it
+     with zero visible area, so IntersectionObserver would never report it.
+     The heading wipe is driven by its parent wrapper instead (see styles.css). */
+  var wipeables  = $$('.reveal-wipe');
+  var righters  = $$('.reveal-right');
   var revealables = $$('.reveal');
 
-  if (!revealables.length) {
+  // Index chips so each can be offset by --i for a staggered pop-in
+  $$('.chips').forEach(function (list) {
+    $$('.chip', list).forEach(function (chip, i) { chip.style.setProperty('--i', i); });
+  });
+
+  var animatables = revealables.concat(righters);
+
+  if (!animatables.length) {
     // nothing to do
   } else if (prefersReduced() || !('IntersectionObserver' in window)) {
-    revealables.forEach(function (el) { el.classList.add('is-visible'); });
+    animatables.forEach(function (el) { el.classList.add('is-visible'); });
   } else {
     var revealer = new IntersectionObserver(function (entries, obs) {
       entries.forEach(function (entry) {
@@ -140,11 +152,25 @@
       });
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
 
-    revealables.forEach(function (el) { revealer.observe(el); });
+    animatables.forEach(function (el) { revealer.observe(el); });
+
+    /* Browsers restore the scroll position on reload, and a deep link can land
+       mid-page. Anything already scrolled past would otherwise stay hidden
+       until the visitor scrolled back up through it. */
+    var revealPassed = function () {
+      animatables.forEach(function (el) {
+        if (el.getBoundingClientRect().bottom < 0) {
+          el.classList.add('is-visible');
+          revealer.unobserve(el);
+        }
+      });
+    };
+    revealPassed();
+    window.addEventListener('pageshow', revealPassed);   // bfcache restore
 
     // Re-run visibility if the user turns reduced motion off mid-session
     var onMotionChange = function () {
-      if (prefersReduced()) revealables.forEach(function (el) { el.classList.add('is-visible'); });
+      if (prefersReduced()) animatables.forEach(function (el) { el.classList.add('is-visible'); });
     };
     reduceMotion.addEventListener ? reduceMotion.addEventListener('change', onMotionChange)
                                   : reduceMotion.addListener(onMotionChange);
@@ -216,4 +242,45 @@
   /* ── 7. Footer year ──────────────────────────────────────────────────── */
   var year = $('#year');
   if (year) year.textContent = String(new Date().getFullYear());
+/* ── 8. Reading progress + back to top ───────────────────────────────── */
+  var bar = $('#progress-bar');
+  var toTop = $('#to-top');
+
+  if (bar || toTop) {
+    var syncScrollUI = function () {
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - window.innerHeight;
+      var pct = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
+
+      if (bar) bar.style.setProperty('--progress', pct.toFixed(4));
+
+      if (toTop) {
+        var show = window.scrollY > window.innerHeight * 0.9;
+        if (show !== toTop.classList.contains('is-visible')) {
+          toTop.classList.toggle('is-visible', show);
+        }
+      }
+    };
+
+    var scrollUIQueued = false;
+    var queueScrollUI = function () {
+      if (scrollUIQueued) return;
+      scrollUIQueued = true;
+      requestAnimationFrame(function () { scrollUIQueued = false; syncScrollUI(); });
+    };
+
+    syncScrollUI();
+    window.addEventListener('scroll', queueScrollUI, { passive: true });
+    window.addEventListener('resize', queueScrollUI, { passive: true });
+
+    if (toTop) {
+      toTop.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: prefersReduced() ? 'auto' : 'smooth' });
+        // Return focus to the top of the document for keyboard users
+        var brand = $('.brand');
+        if (brand) { brand.setAttribute('tabindex', '-1'); brand.focus({ preventScroll: true }); }
+      });
+    }
+  }
+
 })();
