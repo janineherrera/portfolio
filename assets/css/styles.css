@@ -627,10 +627,13 @@ a { color: inherit; }
   position: absolute;
   z-index: 1;
   /* `contain` centres the figure horizontally in this box, so the box's centre
-     is the figure's centre. right + width/2 is chosen so that centre lands on
-     the middle of the black band at every width - a fixed px width would cap
-     out on wide screens and drift off-centre as the band grows. */
-  right: 1.4%;
+     is the figure's centre: right + width/2 fixes it.
+
+     The diagonal leans left as it descends (62% -> 44%), so the middle of the
+     black band slides from ~80% of the width at the figure's head to ~74% down
+     at her knees. 77% splits that, which puts her visually centred and leaves
+     the black margin even on both sides instead of crowding the right edge. */
+  right: 6%;
   bottom: -14%;
   width: 34%;
   height: 96%;
