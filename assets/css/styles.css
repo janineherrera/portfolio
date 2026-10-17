@@ -917,9 +917,12 @@ a { color: inherit; }
 .card__thumb {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
+  /* Capped so a wide card cannot be swallowed by its own screenshot.
+     object-fit crops rather than letterboxes, so the height is safe. */
+  max-height: clamp(9rem, 19vw, 15rem);
   object-fit: cover;
-  object-position: top center;
+  object-position: 50% 38%;
   border-bottom: 1px solid rgba(255,255,255,.09);
   background: #050507;
 }
