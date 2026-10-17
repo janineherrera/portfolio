@@ -129,9 +129,33 @@ a { color: inherit; }
 [tabindex="-1"]:focus,
 [tabindex="-1"]:focus-visible { outline: none; }
 
-/* Touch targets stay comfortable on small screens */
+/* Touch targets stay comfortable on small screens.
+
+   WCAG 2.2 SC 2.5.8 (AA) sets the floor at 24x24 CSS px; Apple's HIG asks for
+   44pt and Android for 48dp, so touch pointers get the larger figure. A mouse
+   keeps the original metrics - a 44px nav link would look wrong in an 88px
+   header sitting next to 15px type. Scoped to `pointer: coarse` so this never
+   moves anything on a desktop. */
 @media (pointer: coarse) {
   :is(a, button) { touch-action: manipulation; }
+
+  .nav__link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .btn { min-height: 44px; }
+
+  .brand { min-height: 44px; }
+
+  /* Footer links measure 17px tall - a list, not inline text in a sentence,
+     so none of the SC 2.5.8 exceptions apply. Padding grows the hit area
+     without changing the type size or the row spacing. */
+  .footer-nav a {
+    display: inline-block;
+    padding-block: 0.7rem;
+  }
 }
 
 /* Hidden SVG icon sprite — referenced with <use href="#i-…">.
