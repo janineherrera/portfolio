@@ -23,7 +23,9 @@ panel on the left and a black portrait panel on the right, divided by a bold dia
     ├── css/styles.css             design tokens first, then components
     ├── js/main.js                 nav, scroll spy, reveals, parallax
     └── img/
-        ├── portrait-placeholder.svg   ← replace with your portrait
+        ├── portrait.png               your photo, background removed
+        ├── portrait-source.jpg        the original upload, kept for reference
+        ├── work-portfolio.png         screenshot used as a project card thumb
         └── favicon.svg                ← replace with your monogram
 ```
 
@@ -122,17 +124,28 @@ Search for that string to jump straight to each spot.
 
 ### Portrait
 
-Drop your photo at `assets/img/portrait.jpg` (or `.png`/`.webp`) and point the `src`
-at it. Two cases:
+Two files in `assets/img/`:
 
-* **Transparent-background cutout (recommended, matches the reference)** — keep
-  `object-fit: contain` in `.hero__portrait img`. Nothing else to change.
+| File | What it is |
+| --- | --- |
+| `portrait.png` | The cut-out the site actually loads — transparent background, 860×1806 |
+| `portrait-source.jpg` | Your original photo, untouched, kept for reference |
+
+The original had a light gray wall behind it, which read as a bright rectangle on the
+black panel. It was segmented with a person-segmentation model (U²-Net), then the
+result was trimmed to the subject's bounds with a little headroom restored so the head
+sits just below the header. No retouching was applied — face, hair, skin, pose and
+clothing are the original pixels.
+
+To use a different photo:
+
+* **Cut-out** (recommended, matches the reference) — keep `object-fit: contain`.
+  Aim for a tall, narrow subject; the hero box is sized to height.
 * **Regular photograph** — switch to `object-fit: cover` and tune `object-position`
-  (e.g. `50% 20%`). The figure is cropped at the bottom of the hero, like the reference.
+  (e.g. `50% 20%`). The figure is cropped at the bottom of the hero.
 
-The placeholder SVG is a stylized silhouette so the page never shows a broken image.
-Delete `portrait-placeholder.svg` once your own asset is in place, and update the
-`og:image` meta tag too.
+Either way, update the `width`/`height` attributes on the `<img>` so the browser can
+reserve space and avoid layout shift, and point the `og:image` meta tag at the new file.
 
 ### Adding a project
 

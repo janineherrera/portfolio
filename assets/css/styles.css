@@ -620,14 +620,16 @@ a { color: inherit; }
 }
 .social__tile:active { transform: translateY(-1px); }
 
-/* Portrait */
+/* Portrait — the cut-out is 860x1806 (aspect .476): a tall, narrow figure. The
+   box is sized to the hero's height and kept narrow so `contain` centres it
+   well clear of the diagonal. */
 .hero__portrait {
   position: absolute;
   z-index: 1;
   right: 3%;
-  bottom: -8%;
-  width: min(44%, 640px);
-  height: 88%;
+  bottom: -14%;
+  width: min(34%, 480px);
+  height: 96%;
   margin: 0;
   transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
   transition: transform .5s cubic-bezier(.2,.7,.3,1);
@@ -684,14 +686,16 @@ a { color: inherit; }
   }
   .hero__lede { max-width: none; }
 
+  /* The cut-out is a tall narrow figure, so on mobile the height is what
+     matters - width would letterbox it down to nothing. */
   .hero__portrait {
     position: relative;
     grid-row: 2;
     grid-column: 1;
     right: auto;
     bottom: auto;
-    width: min(82%, 26rem);
-    height: clamp(17rem, 46svh, 27rem);
+    width: min(86%, 26rem);
+    height: clamp(20rem, 56svh, 30rem);
     margin: 0 auto;
     /* nudge down so the torso crops at the bottom edge, like the reference */
     transform: translateY(4%);
@@ -699,7 +703,10 @@ a { color: inherit; }
 }
 
 @media (max-width: 420px) {
-  .hero__portrait { width: min(92%, 24rem); }
+  .hero__portrait {
+    width: min(94%, 24rem);
+    height: clamp(18rem, 52svh, 27rem);
+  }
 }
 
 /* ══ 7. Sections ══════════════════════════════════════════════════════════ */
