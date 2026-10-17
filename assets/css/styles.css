@@ -626,9 +626,13 @@ a { color: inherit; }
 .hero__portrait {
   position: absolute;
   z-index: 1;
-  right: 3%;
+  /* `contain` centres the figure horizontally in this box, so the box's centre
+     is the figure's centre. right + width/2 is chosen so that centre lands on
+     the middle of the black band at every width - a fixed px width would cap
+     out on wide screens and drift off-centre as the band grows. */
+  right: 1.4%;
   bottom: -14%;
-  width: min(34%, 480px);
+  width: 34%;
   height: 96%;
   margin: 0;
   transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
