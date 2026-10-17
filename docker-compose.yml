@@ -1,0 +1,42 @@
+services:
+  portfolio:
+    build:
+      context: .
+      args:
+        # Flip to 1 once you have replaced all the demo content, to make the
+        # build fail if any placeholder is still present.
+        CHECK_PLACEHOLDERS: "0"
+    image: portfolio:latest
+    container_name: portfolio
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    # Hardening: if your nginx image's entrypoint writes to /etc/nginx at
+    # startup, add `read_only: true` plus tmpfs for /var/cache/nginx, /var/run
+    # and /tmp — test it before relying on it.
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Same image, behind a TLS-terminating nginx config for a real deployment.
+  # Build once, then:  docker compose --profile tls up -d
+  portfolio-tls:
+    profiles: ["tls"]
+    build:
+      context: .
+    image: portfolio:latest
+    container_name: portfolio-tls
+    ports:
+      - "443:443"
+    restart: unless-stopped
+    volumes:
+      # Replace with your own certificate paths (certs/ is git- and
+      # docker-ignored, so secrets never enter the build context).
+      - ./certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
+      - ./certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+      - ./nginx/tls.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro

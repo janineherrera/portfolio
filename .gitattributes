@@ -1,0 +1,15 @@
+# Normalise line endings to LF everywhere.
+# This repo is authored on Windows but built and served on Linux (Docker/nginx),
+# so CRLF in the Dockerfile or nginx configs is a real hazard.
+* text=auto eol=lf
+
+# Binary / no-EOL-translation files
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.ico    binary
+*.woff   binary
+*.woff2  binary
+*.pdf    binary

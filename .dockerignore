@@ -1,0 +1,25 @@
+# Keep the build context small and reproducible.
+.git
+.gitignore
+.github
+node_modules
+.vscode
+.idea
+
+# Local-only artefacts
+certs/
+*.log
+*.local
+.env
+
+# Docs and validation tooling are not needed at runtime.
+# (tools/ is still copied explicitly by the Dockerfile's validate stage.)
+README.md
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini

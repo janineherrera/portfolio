@@ -1,0 +1,32 @@
+# TLS certificates and private keys must never be committed.
+# See the "Deploying over TLS" section of README.md.
+certs/
+*.pem
+*.key
+*.crt
+
+# Dependencies / build output (there is no build step, but just in case)
+node_modules/
+dist/
+build/
+.cache/
+
+# Local environment
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Editor / OS noise
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
