@@ -1,0 +1,38 @@
+# Files that are not part of the deployed site.
+# Vercel only needs index.html, assets/, robots.txt and vercel.json.
+# Everything below is for local development or the Docker image, so keeping it
+# out of the upload makes deploys smaller and faster.
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+nginx/
+
+# Local tooling
+tools/
+README.md
+
+# Git internals (Vercel handles these itself)
+.git
+.gitignore
+.gitattributes
+
+# Secrets - must never be uploaded
+certs/
+*.pem
+*.key
+*.crt
+.env
+.env.*
+!.env.example
+
+# Editor / OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
