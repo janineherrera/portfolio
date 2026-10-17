@@ -175,8 +175,8 @@ for (const { file, html } of pages) {
   if (foot && foot.index > bodyEnd) fail(`${file}: <footer> is outside </body>`);
 
   // Sections must appear in the order the nav implies
-  const order = [...html.matchAll(/<section[^>]*\bid="(about|skills|experience|work|contact)"/g)].map(m => m[1]);
-  const EXPECTED = ['about', 'skills', 'experience', 'work', 'contact'];
+  const order = [...html.matchAll(/<section[^>]*\bid="(about|skills|experience|education|work|contact)"/g)].map(m => m[1]);
+  const EXPECTED = ['about', 'skills', 'experience', 'education', 'work', 'contact'];
   if (order.length) {
     const sorted = [...order].sort((a, b) => EXPECTED.indexOf(a) - EXPECTED.indexOf(b));
     if (order.join() !== sorted.join()) {

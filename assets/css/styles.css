@@ -1203,6 +1203,15 @@ ul.exp-item__points,
 }
 .linkrow:hover .linkrow__arrow { transform: translate(3px, -3px); }
 
+/* A non-interactive row (the street address). It keeps the shell but drops the
+   hover lift and the arrow, so it does not read as something you can click. */
+.linkrow--static { cursor: default; }
+.linkrow--static:hover {
+  background: rgba(255,255,255,.045);
+  border-color: var(--c-line-inv);
+  transform: none;
+}
+
 @media (max-width: 880px) {
   .contact { grid-template-columns: 1fr; }
   .linkrow { grid-template-columns: 1fr auto; }

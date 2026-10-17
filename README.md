@@ -117,7 +117,11 @@ Search for that string to jump straight to each spot.
 | About copy + fact list | `.about` |
 | Skills groups | `.skills` |
 | Roles / work history | `.experience` |
+| Education | `.experience` (second list, in `#education`) |
 | Projects | `.cards` |
+| Email | `.social` tile + `.contact__intro .btn` + `.contact__links` + the JSON-LD block |
+| Phone (`tel:` + display text) | `.contact__links` |
+| Street address | `.contact__links` (the `.linkrow--static` row) |
 
 > A longer name is fine — it wraps, and `.hero__name` has `overflow-wrap: break-word`
 > so it never forces a horizontal scrollbar. If you use a much longer name, drop
@@ -174,6 +178,22 @@ Two things to know about that block:
 
 Keep each bullet to something you would be happy to be asked about in an interview.
 Specific and short beats long and vague.
+
+### Adding a qualification
+
+Identical markup — copy a whole `<li class="exp-item reveal">…</li>` into the second
+`<ol class="experience">` inside `#education`, most recent first. Use
+`2024 &ndash; Present` for something still in progress.
+
+### The phone number
+
+The `tel:` href must be the **international** form (`tel:+639273437032`). The local
+`0927…` number will not dial from most devices. The visible text is formatted separately
+so it can still read `+63 927 344 7032`.
+
+The street address row is deliberately **not** a link — an address has nowhere to go, and
+a maps link would hand a third party your location on click. `.linkrow--static` keeps the
+same shell but drops the hover lift and the arrow so it does not look clickable.
 
 ---
 
