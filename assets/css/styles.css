@@ -26,14 +26,24 @@
   --c-tile-hi:    #DCDCDC;
   --c-black:      #050505;  /* right hero panel */
   --c-ink:        #050505;  /* primary text     */
-  --c-muted:      #858585;  /* secondary text   */
+  /* Muted text. #858585 only reached 2.59:1 on the panel and failed WCAG AA;
+     #585858 clears 4.5:1 on both the panel and the section surface. */
+  --c-muted:      #585858;
   --c-white:      #FFFFFF;
   --c-surface:    #F5F5F4;  /* section backdrop */
   --c-surface-2:  #FFFFFF;  /* cards            */
   --c-line:       rgba(5, 5, 5, .12);
   --c-line-soft:  rgba(5, 5, 5, .07);
   --c-line-inv:   rgba(255, 255, 255, .16);
-  --c-focus:      #2563EB;
+
+  /* Accent - used sparingly. No single tone can clear 4.5:1 on both the light
+     and the dark panel, so there is a pair: the bright one for dark
+     backgrounds, the deep one for light ones. */
+  --c-accent:      #3B82F6;  /* on dark  (5.54:1 on #050505) */
+  --c-accent-deep: #1D4ED8;  /* on light (4.70:1 on #D8D8D8, 6.14:1 on #F5F5F4) */
+
+  /* Focus rings need 3:1 against every surface and can span both contexts. */
+  --c-focus: #2563EB;
 
   /* Typography */
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -237,7 +247,7 @@ a { color: inherit; }
   transition: gap .2s ease, opacity .2s ease;
 }
 .text-link svg { width: 0.95em; height: 0.95em; }
-.text-link:hover  { gap: 0.6rem; }
+.text-link:hover  { gap: 0.6rem; color: var(--c-accent-deep); }
 .text-link:active { opacity: .6; }
 
 /* ══ 5. Header & navigation ══════════════════════════════════════════════ */
@@ -326,7 +336,7 @@ a { color: inherit; }
   position: absolute;
   left: 0; right: 0; bottom: 0;
   height: 2px;
-  background: currentColor;
+  background: var(--c-accent);
   border-radius: 2px;
   transform: scaleX(0);
   transform-origin: left;
@@ -472,10 +482,58 @@ a { color: inherit; }
 .hero__panel--intro {
   background: var(--c-panel);
   clip-path: polygon(0 0, var(--hero-diag-top) 0, var(--hero-diag-bottom) 100%, 0 100%);
+  /* Subtle drift on scroll. The scale keeps every edge covered no matter how
+     far it travels; transform-origin 0 0 pins the left and top edges so the
+     panel can never pull away from the stage. */
+  transform: translate3d(0, var(--drift, 0px), 0) scale(1.02);
+  transform-origin: 0 0;
+  will-change: transform;
 }
 .hero__panel--portrait {
   display: none;
   background: var(--c-black);
+}
+
+/* Hero entrance — a staggered cascade.
+   Base styles are the final state and there is no opacity:0 outside the
+   keyframes, so if animations are unsupported the hero is simply visible.
+   `both` fill holds the from-state during each element's delay. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hero__greeting,
+.hero__role,
+.hero__lede,
+.social {
+  animation: rise .7s cubic-bezier(.2,.7,.3,1) both;
+}
+.hero__greeting { animation-delay: .05s; }
+.hero__role     { animation-delay: .42s; }
+.hero__lede     { animation-delay: .52s; }
+.social        { animation-delay: .62s; }
+
+/* The portrait only fades - animating its transform would fight the
+   parallax, which drives --px / --py on the same element. */
+.hero__portrait { animation: fade-in 1s ease .3s both; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Masked reveal for the name: the inner span slides up out of a clipped box.
+   The extra padding keeps descenders (g, y, j) from being cut off. */
+@keyframes mask-up {
+  from { transform: translateY(105%); }
+  to   { transform: none; }
+}
+.hero__mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: .08em;
+  margin-bottom: -.08em;
+}
+.hero__mask > span {
+  display: block;
+  animation: mask-up .9s cubic-bezier(.16,.9,.3,1) .18s both;
 }
 
 .hero__intro {
@@ -498,7 +556,7 @@ a { color: inherit; }
   display: block;
   width: 3.25rem; height: 2px;
   margin-top: 1.15rem;
-  background: var(--c-ink);
+  background: var(--c-accent-deep);
   border-radius: 2px;
   transform-origin: left;
   animation: rule-in 1s cubic-bezier(.2,.7,.3,1) .25s both;
@@ -556,6 +614,7 @@ a { color: inherit; }
 .social__icon { width: 45%; height: 45%; }
 .social__tile:hover {
   transform: translateY(-4px);
+  color: var(--c-accent-deep);
   background: var(--c-white);
   box-shadow: inset 0 1px 0 var(--c-white), 0 4px 8px rgba(5,5,5,.10), 0 16px 28px -10px rgba(5,5,5,.5);
 }
@@ -852,7 +911,7 @@ a { color: inherit; }
 }
 .linkrow:hover {
   background: rgba(255,255,255,.1);
-  border-color: rgba(255,255,255,.32);
+  border-color: var(--c-accent);
   transform: translateX(4px);
 }
 .linkrow:active { transform: translateX(1px); }
@@ -924,7 +983,7 @@ a { color: inherit; }
   color: rgba(255,255,255,.78);
   transition: color .2s ease;
 }
-.footer-nav a:hover { color: var(--c-white); }
+.footer-nav a:hover { color: var(--c-accent); }
 .site-footer__legal { font-size: .8rem; color: rgba(255,255,255,.45); }
 
 @media (max-width: 620px) {
@@ -956,6 +1015,9 @@ a { color: inherit; }
 
   .js .reveal { opacity: 1; transform: none; }
   .hero__portrait { transform: none !important; }
+  .hero__panel--intro { transform: none !important; }
+  .hero__greeting, .hero__role, .hero__lede, .social,
+  .hero__portrait, .hero__mask > span { animation: none !important; }
 }
 
 /* ══ 14. Print ═══════════════════════════════════════════════════════════ */

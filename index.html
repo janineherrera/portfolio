@@ -110,7 +110,7 @@
       <!-- ✏️  EDIT: greeting, name, role -->
       <div class="hero__intro">
         <p class="hero__greeting">Hi, I am</p>
-        <h1 class="hero__name" id="hero-name">Janine Herrera</h1>
+        <h1 class="hero__name" id="hero-name"><span class="hero__mask"><span>Janine Herrera</span></span></h1>
         <p class="hero__role">Front-end Developer <span class="hero__role-sep">&amp;</span> UI Designer</p>
         <p class="hero__lede">
           I design and build fast, accessible interfaces for the web — from design
@@ -204,7 +204,7 @@
 
       <!-- ✏️  EDIT: skill groups. Copy a whole <div class="skill-group"> block to add one. -->
       <div class="skills">
-        <section class="skill-group reveal" aria-labelledby="skills-fe">
+        <section class="skill-group reveal" data-reveal-delay="0" aria-labelledby="skills-fe">
           <h3 class="skill-group__title" id="skills-fe">
             <span class="skill-group__num" aria-hidden="true">01</span> Front-end
           </h3>
@@ -221,7 +221,7 @@
           <p class="skill-group__note">Typed, tested, and shipped through a real CI pipeline — not a template.</p>
         </section>
 
-        <section class="skill-group reveal" aria-labelledby="skills-craft">
+        <section class="skill-group reveal" data-reveal-delay="80" aria-labelledby="skills-craft">
           <h3 class="skill-group__title" id="skills-craft">
             <span class="skill-group__num" aria-hidden="true">02</span> Craft &amp; UX
           </h3>
@@ -236,7 +236,7 @@
           <p class="skill-group__note">Semantic markup, visible focus and reduced-motion support are non-negotiable.</p>
         </section>
 
-        <section class="skill-group reveal" aria-labelledby="skills-platform">
+        <section class="skill-group reveal" data-reveal-delay="160" aria-labelledby="skills-platform">
           <h3 class="skill-group__title" id="skills-platform">
             <span class="skill-group__num" aria-hidden="true">03</span> Platform
           </h3>

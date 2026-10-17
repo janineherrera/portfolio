@@ -150,9 +150,44 @@
                                   : reduceMotion.addListener(onMotionChange);
   }
 
-  /* ── 6. Subtle portrait parallax ─────────────────────────────────────── */
+  /* ── 6. Diagonal drift + subtle portrait parallax ────────────────────── */
   var portrait = $('#hero-portrait');
   var hero = $('.hero__stage');
+  var introPanel = $('.hero__panel--intro');
+
+  if (hero) {
+    /* The diagonal edge drifts a few pixels as the hero scrolls away.
+       Drives a transform (composited), never an animated clip-path.
+       The value is NEGATIVE (upward): the panel is scaled 1.02 about its
+       top-left corner, which covers 2% of the stage height at the bottom but
+       nothing above the top. Drifting upward therefore keeps every edge
+       covered; drifting down would expose a black sliver at the hero's top.
+       The travel is a FRACTION of the stage height rather than a fixed pixel
+       value, so it can never exceed the 2% the scale provides - a short
+       viewport would otherwise out-travel its own headroom. */
+    var DRIFT_FRAC = 0.015; // 1.5% of the stage height (scale allows 2%)
+    var driftFrame = null;
+
+    var applyDrift = function () {
+      driftFrame = null;
+      if (!introPanel) return;
+      if (prefersReduced()) { introPanel.style.setProperty('--drift', '0px'); return; }
+      var span = hero.offsetHeight || 1;
+      var y = Math.min(Math.max(window.scrollY, 0), span);
+      introPanel.style.setProperty('--drift', (-(y * DRIFT_FRAC)).toFixed(2) + 'px');
+    };
+
+    var requestDrift = function () {
+      if (driftFrame) return;
+      driftFrame = requestAnimationFrame(applyDrift);
+    };
+
+    applyDrift();
+    window.addEventListener('scroll', requestDrift, { passive: true });
+    window.addEventListener('resize', requestDrift, { passive: true });
+    reduceMotion.addEventListener ? reduceMotion.addEventListener('change', applyDrift)
+                                  : reduceMotion.addListener(applyDrift);
+  }
 
   if (portrait && hero && !prefersReduced() && window.matchMedia('(pointer: fine)').matches) {
     var raf = null;

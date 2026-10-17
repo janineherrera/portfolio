@@ -126,6 +126,27 @@ function checkBalance(html, file) {
 
 for (const { file, html } of pages) checkBalance(html, file);
 
+/* --- 2c. Text encoding must be intact ---------------------------------- */
+// A UTF-8 file read as ANSI and written back as UTF-8 double-encodes every
+// non-ASCII character (em dashes, box drawing, the pencil emoji). The result
+// is valid UTF-8, so nothing else catches it - the page just renders "â€"".
+const MOJIBAKE = /[\u00C2\u00C3\u00E2\u0093\u0094\uFFFD]/;
+
+for (const f of ['index.html', 'assets/css/styles.css', 'assets/js/main.js', 'README.md']) {
+  const p = join(ROOT, f);
+  if (!existsSync(p)) continue;
+
+  const buf = readFileSync(p);
+  const text = buf.toString('utf8');
+
+  if (text.includes('\uFFFD')) fail(`${f}: contains U+FFFD - file is not valid UTF-8`);
+  const m = text.match(MOJIBAKE);
+  if (m) {
+    const line = text.slice(0, m.index).split('\n').length;
+    fail(`${f}:${line}: mojibake "${m[0]}" - text was double-encoded (${m[0] === '\u00C2' ? 'read as ANSI then written as UTF-8' : 'check encoding'}). Use a UTF-8 aware editor, not PowerShell Get-Content/Set-Content.`);
+  }
+}
+
 /* --- 3. Basic document sanity ------------------------------------------- */
 for (const { file, html } of pages) {
   const h1 = (html.match(/<h1[\s>]/g) || []).length;
