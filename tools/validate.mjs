@@ -153,6 +153,40 @@ for (const f of ['index.html', 'assets/css/styles.css', 'assets/js/main.js', 'RE
   }
 }
 
+/* --- 2d. Document structure ------------------------------------------- */
+/* A scripted edit once appended a whole section after </html>. The browser
+   silently hoists it back into the DOM, so it renders - just in the wrong
+   place, below the footer. Nothing else catches it. */
+for (const { file, html } of pages) {
+  const bodyStart = html.search(/<body[^>]*>/i);
+  const bodyEnd = html.search(/<\/body>/i);
+  if (bodyStart === -1 || bodyEnd === -1) { fail(`${file}: no <body> found`); continue; }
+
+  // Anything substantial after </body> is outside the document
+  const after = html.slice(bodyEnd + 7)
+    .replace(/<\/html>\s*$/i, '')
+    .replace(/<!--[\s\S]*?-->/g, '')      // comments outside body are ok
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .trim();
+  if (after) fail(`${file}: ${after.split('\n')[0].trim().slice(0, 60)} sits outside </body> - move it inside`);
+
+  // <footer> must close before </body>, or the page ends on a footer early
+  const foot = html.match(/<footer[\s\S]*?<\/footer>/i);
+  if (foot && foot.index > bodyEnd) fail(`${file}: <footer> is outside </body>`);
+
+  // Sections must appear in the order the nav implies
+  const order = [...html.matchAll(/<section[^>]*\bid="(about|skills|work|contact)"/g)].map(m => m[1]);
+  const EXPECTED = ['about', 'skills', 'work', 'contact'];
+  if (order.length) {
+    const sorted = [...order].sort((a, b) => EXPECTED.indexOf(a) - EXPECTED.indexOf(b));
+    if (order.join() !== sorted.join()) {
+      fail(`${file}: sections out of order - found [${order}] , expected [${sorted}]`);
+    }
+    const missing = EXPECTED.filter(x => !order.includes(x));
+    if (missing.length) warn(`${file}: no section for ${missing.join(', ')} (nav may link to nothing)`);
+  }
+}
+
 /* --- 3. Basic document sanity ------------------------------------------- */
 for (const { file, html } of pages) {
   const h1 = (html.match(/<h1[\s>]/g) || []).length;

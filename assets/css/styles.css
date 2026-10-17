@@ -709,8 +709,12 @@ a { color: inherit; }
   padding-block: var(--section-y);
   background: var(--c-surface);
 }
-/* Consecutive light sections share a single gap rather than stacking two. */
-.section + .section:not(.section--contact) { padding-top: 0; }
+/* Consecutive light sections share a single gap rather than stacking two.
+   The two dark sections keep their own padding so they get a visible dark
+   band above their heading instead of butting straight into the content.
+   Note `:not()` counts towards specificity, so this rule is (0,3,0) - a
+   single-class override elsewhere will not beat it. */
+.section + .section:not(.section--contact):not(.section--work) { padding-top: 0; }
 
 .section__head { max-width: 46rem; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
 
@@ -831,7 +835,6 @@ a { color: inherit; }
 /* Dark panel, one step lighter than the contact section so the two read as
    separate blocks rather than one long dark stretch. */
 .section--work {
-  margin-top: var(--section-y);
   padding-top: var(--section-y);
   background: #0A0A0D;
   color: var(--c-white);
